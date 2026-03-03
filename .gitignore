@@ -1,0 +1,10 @@
+.DS_Store
+.build
+Derived
+Tuist/.build
+Tuist/.cache
+.run-menubar.lock
+*.xcodeproj
+*.xcworkspace
+**/*.xcuserstate
+**/*.xcuserdata
