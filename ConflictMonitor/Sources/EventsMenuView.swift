@@ -183,10 +183,13 @@ struct EventsMenuView: View {
     }
 
     private var headerSubtitle: String {
+        let prefix: String
         if let lastUpdatedAt = store.lastUpdatedAt {
-            return "Updated \(lastUpdatedAt.formatted(date: .omitted, time: .shortened))"
+            prefix = "Updated \(lastUpdatedAt.formatted(date: .omitted, time: .shortened))"
+        } else {
+            prefix = "Not updated yet"
         }
-        return "Not updated yet"
+        return "\(prefix) • \(itemsCountText)"
     }
 
     private var liveButtonTitle: String {
@@ -195,6 +198,11 @@ struct EventsMenuView: View {
 
     private var liveButtonColor: Color {
         store.isLiveEnabled ? .green : .gray
+    }
+
+    private var itemsCountText: String {
+        let count = store.events.count
+        return count == 1 ? "1 item" : "\(count) items"
     }
 
     private var filteredEvents: [ConflictEvent] {
