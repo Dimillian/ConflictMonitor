@@ -37,7 +37,7 @@ struct EventsMenuView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text("Latest Conflict Events")
                     .font(.system(size: 13, weight: .semibold))
-                Text("monitor-the-situation.com")
+                Text(headerSubtitle)
                     .font(.system(size: 10))
                     .foregroundStyle(.secondary)
             }
@@ -117,21 +117,22 @@ struct EventsMenuView: View {
 
     private var footer: some View {
         HStack {
-            if let lastUpdatedAt = store.lastUpdatedAt {
-                Text("Updated \(lastUpdatedAt.formatted(date: .omitted, time: .shortened))")
-                    .font(.system(size: 10))
-                    .foregroundStyle(.secondary)
-            } else {
-                Text("Not updated yet")
-                    .font(.system(size: 10))
-                    .foregroundStyle(.secondary)
-            }
+            Text("monitor-the-situation.com")
+                .font(.system(size: 10))
+                .foregroundStyle(.secondary)
 
             Spacer()
 
             Link("Open Website", destination: websiteURL)
                 .font(.system(size: 10, weight: .medium))
         }
+    }
+
+    private var headerSubtitle: String {
+        if let lastUpdatedAt = store.lastUpdatedAt {
+            return "Updated \(lastUpdatedAt.formatted(date: .omitted, time: .shortened))"
+        }
+        return "Not updated yet"
     }
 
     private var liveButtonTitle: String {
