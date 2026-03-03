@@ -11,17 +11,26 @@ struct EventRowView: View {
                     .foregroundStyle(.primary)
                     .lineLimit(2)
 
-                Text(event.shortLocation)
-                    .font(.system(size: 11))
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-
                 HStack(spacing: 8) {
-                    Text(event.category.capitalized)
-                    Text(event.createdAtDate, style: .relative)
+                    Text(categoryBadgeLabel)
+                        .font(.system(size: 9, weight: .bold))
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 3)
+                        .background(categoryBadgeColor.opacity(0.2))
+                        .foregroundStyle(categoryBadgeColor)
+                        .clipShape(Capsule())
+
+                    Text(event.shortLocation)
+                        .font(.system(size: 11))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+
+                    Text(shortRelativeTime)
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
                 }
-                .font(.system(size: 10, weight: .medium))
-                .foregroundStyle(.secondary)
             }
 
             Spacer(minLength: 8)
@@ -50,5 +59,56 @@ struct EventRowView: View {
             return .green
         }
     }
-}
 
+    private var normalizedCategory: String {
+        event.category.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+    }
+
+    private var categoryBadgeLabel: String {
+        switch normalizedCategory {
+        case "conflict":
+            return "Conflict"
+        case "political":
+            return "Political"
+        case "humanitarian":
+            return "Humanitarian"
+        case "economic":
+            return "Economic"
+        case "disaster":
+            return "Disaster"
+        default:
+            return event.category.capitalized
+        }
+    }
+
+    private var categoryBadgeColor: Color {
+        switch normalizedCategory {
+        case "conflict":
+            return .red
+        case "political":
+            return .purple
+        case "humanitarian":
+            return .teal
+        case "economic":
+            return .green
+        case "disaster":
+            return .orange
+        default:
+            return .gray
+        }
+    }
+
+    private var shortRelativeTime: String {
+        let seconds = max(0, Int(Date().timeIntervalSince(event.createdAtDate)))
+        if seconds < 60 {
+            return "\(seconds)s"
+        }
+        if seconds < 3600 {
+            return "\(seconds / 60)m"
+        }
+        if seconds < 86_400 {
+            return "\(seconds / 3600)h"
+        }
+        return "\(seconds / 86_400)d"
+    }
+}
