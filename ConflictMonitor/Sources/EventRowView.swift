@@ -20,11 +20,23 @@ struct EventRowView: View {
                         .foregroundStyle(categoryBadgeColor)
                         .clipShape(Capsule())
 
+                    separatorDot
+
                     Text(event.shortLocation)
                         .font(.system(size: 11))
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
                         .truncationMode(.tail)
+
+                    if let confidenceText {
+                        separatorDot
+                        Text(confidenceText)
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                    }
+
+                    separatorDot
 
                     Text(shortRelativeTime)
                         .font(.system(size: 10, weight: .medium))
@@ -110,5 +122,17 @@ struct EventRowView: View {
             return "\(seconds / 3600)h"
         }
         return "\(seconds / 86_400)d"
+    }
+
+    private var confidenceText: String? {
+        guard let confidence = event.confidence else { return nil }
+        let normalized = min(max(confidence, 0), 100)
+        return "Conf \(normalized)%"
+    }
+
+    private var separatorDot: some View {
+        Text("•")
+            .font(.system(size: 10, weight: .medium))
+            .foregroundStyle(.secondary.opacity(0.7))
     }
 }
