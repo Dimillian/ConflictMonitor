@@ -52,7 +52,7 @@ final class EventStore: ObservableObject {
         defer { isLoading = false }
 
         do {
-            events = try await client.fetchLatestEvents(limit: 25)
+            events = try await client.fetchLatestEvents()
             lastUpdatedAt = Date()
         } catch {
             errorMessage = error.localizedDescription

@@ -8,7 +8,7 @@ struct EventsClient {
         self.session = session
     }
 
-    func fetchLatestEvents(limit: Int) async throws -> [ConflictEvent] {
+    func fetchLatestEvents() async throws -> [ConflictEvent] {
         var request = URLRequest(url: endpoint)
         request.cachePolicy = .reloadIgnoringLocalCacheData
         request.timeoutInterval = 15
@@ -24,7 +24,7 @@ struct EventsClient {
 
         let decoder = JSONDecoder()
         let events = try decoder.decode([ConflictEvent].self, from: data)
-        return Array(events.sorted(by: { $0.createdAtDate > $1.createdAtDate }).prefix(limit))
+        return events.sorted(by: { $0.createdAtDate > $1.createdAtDate })
     }
 }
 
@@ -50,4 +50,3 @@ private extension URLSession {
         return URLSession(configuration: configuration)
     }()
 }
-
