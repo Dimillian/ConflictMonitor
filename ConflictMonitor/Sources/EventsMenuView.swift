@@ -2,6 +2,7 @@ import SwiftUI
 
 struct EventsMenuView: View {
     @ObservedObject var store: EventStore
+    @State private var expandedEventID: String?
     private let refreshTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
     private let websiteURL = URL(string: "https://monitor-the-situation.com")!
 
@@ -20,6 +21,7 @@ struct EventsMenuView: View {
             footer
         }
         .padding(12)
+        .frame(maxHeight: .infinity, alignment: .top)
         .task {
             await store.refreshIfNeeded(force: true)
         }
@@ -65,7 +67,20 @@ struct EventsMenuView: View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 8) {
                 ForEach(Array(store.events.enumerated()), id: \.element.id) { index, event in
-                    EventRowView(event: event)
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.18)) {
+                            expandedEventID = expandedEventID == event.id ? nil : event.id
+                        }
+                    } label: {
+                        EventRowView(
+                            event: event,
+                            isExpanded: expandedEventID == event.id
+                        )
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+
                     if index < store.events.count - 1 {
                         Divider()
                     }
@@ -73,7 +88,7 @@ struct EventsMenuView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .frame(maxHeight: 460)
+        .frame(maxHeight: .infinity)
     }
 
     @ViewBuilder

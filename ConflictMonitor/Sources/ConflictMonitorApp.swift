@@ -7,9 +7,8 @@ struct ConflictMonitorApp: App {
     var body: some Scene {
         MenuBarExtra("Conflict Monitor", systemImage: "dot.radiowaves.left.and.right") {
             EventsMenuView(store: store)
-                .frame(width: 420)
+                .frame(width: 460, height: 780)
         }
         .menuBarExtraStyle(.window)
     }
 }
-
