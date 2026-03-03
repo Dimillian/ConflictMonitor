@@ -1,3 +1,5 @@
+![Screenshot](assets/screenshot-2026-03-03-13-34-48.png)
+
 # ConflictMonitor
 
 Small macOS menubar app built with Tuist that shows the latest events from:
