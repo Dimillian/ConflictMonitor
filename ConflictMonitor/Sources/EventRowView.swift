@@ -93,7 +93,7 @@ struct EventRowView: View {
                     )
 
                     HStack(spacing: 10) {
-                        Button("Open in Browser") {
+                        Button("Open") {
                             onOpenEventInBrowser()
                         }
                         .buttonStyle(.bordered)
