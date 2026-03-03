@@ -126,12 +126,17 @@ struct EventRowView: View {
                         VStack(alignment: .leading, spacing: 6) {
                             ForEach(signals.prefix(6)) { signal in
                                 HStack(alignment: .firstTextBaseline, spacing: 8) {
-                                    Text(signal.sourceName)
-                                        .font(.system(size: 9, weight: .bold))
-                                        .padding(.horizontal, 6)
-                                        .padding(.vertical, 2)
-                                        .background(Color.secondary.opacity(0.14))
-                                        .clipShape(Capsule())
+                                    if let url = signal.urlValue {
+                                        Button {
+                                            onOpenSignal(url)
+                                        } label: {
+                                            signalSourcePill(signal.sourceName)
+                                        }
+                                        .buttonStyle(.plain)
+                                        .help(url.absoluteString)
+                                    } else {
+                                        signalSourcePill(signal.sourceName)
+                                    }
 
                                     Text(signal.displayText)
                                         .font(.system(size: 10))
@@ -140,14 +145,6 @@ struct EventRowView: View {
                                         .truncationMode(.tail)
 
                                     Spacer(minLength: 6)
-
-                                    if let url = signal.urlValue {
-                                        Button("Open") {
-                                            onOpenSignal(url)
-                                        }
-                                        .buttonStyle(.borderless)
-                                        .font(.system(size: 10, weight: .medium))
-                                    }
                                 }
                             }
                         }
@@ -247,5 +244,14 @@ struct EventRowView: View {
     private var signalsCountText: String {
         let count = signals.count
         return count == 1 ? "1 signal" : "\(count) signals"
+    }
+
+    private func signalSourcePill(_ name: String) -> some View {
+        Text(name)
+            .font(.system(size: 9, weight: .bold))
+            .padding(.horizontal, 6)
+            .padding(.vertical, 2)
+            .background(Color.secondary.opacity(0.14))
+            .clipShape(Capsule())
     }
 }
