@@ -11,7 +11,7 @@ let project = Project(
             destinations: .macOS,
             product: .app,
             bundleId: "com.dimillian.conflictmonitor",
-            deploymentTargets: .macOS("13.0"),
+            deploymentTargets: .macOS("26.0"),
             infoPlist: .extendingDefault(with: [
                 "CFBundleDisplayName": .string("ConflictMonitor"),
                 "LSUIElement": .boolean(true)
@@ -20,4 +20,3 @@ let project = Project(
         )
     ]
 )
-

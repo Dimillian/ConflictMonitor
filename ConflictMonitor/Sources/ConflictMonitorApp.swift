@@ -2,7 +2,7 @@ import SwiftUI
 
 @main
 struct ConflictMonitorApp: App {
-    @StateObject private var store = EventStore()
+    @State private var store = EventStore()
 
     var body: some Scene {
         MenuBarExtra("Conflict Monitor", systemImage: "dot.radiowaves.left.and.right") {

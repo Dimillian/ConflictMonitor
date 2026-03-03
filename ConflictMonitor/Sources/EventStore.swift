@@ -1,7 +1,9 @@
 import Foundation
+import Observation
 
 @MainActor
-final class EventStore: ObservableObject {
+@Observable
+final class EventStore {
     enum LiveStatus: Equatable {
         case disconnected
         case connecting
@@ -9,15 +11,15 @@ final class EventStore: ObservableObject {
         case failed
     }
 
-    @Published private(set) var events: [ConflictEvent] = []
-    @Published private(set) var isLoading = false
-    @Published private(set) var errorMessage: String?
-    @Published private(set) var lastUpdatedAt: Date?
-    @Published private(set) var isLiveEnabled = true
-    @Published private(set) var liveStatus: LiveStatus = .disconnected
-    @Published private(set) var signalsByEventID: [String: [ConflictSignal]] = [:]
-    @Published private(set) var signalsLoadingEventIDs: Set<String> = []
-    @Published private(set) var signalErrorsByEventID: [String: String] = [:]
+    private(set) var events: [ConflictEvent] = []
+    private(set) var isLoading = false
+    private(set) var errorMessage: String?
+    private(set) var lastUpdatedAt: Date?
+    private(set) var isLiveEnabled = true
+    private(set) var liveStatus: LiveStatus = .disconnected
+    private(set) var signalsByEventID: [String: [ConflictSignal]] = [:]
+    private(set) var signalsLoadingEventIDs: Set<String> = []
+    private(set) var signalErrorsByEventID: [String: String] = [:]
 
     private let client: EventsClient
     private let realtimeClient: RealtimeClient

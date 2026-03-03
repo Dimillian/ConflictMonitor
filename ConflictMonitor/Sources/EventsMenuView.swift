@@ -2,7 +2,7 @@ import SwiftUI
 
 struct EventsMenuView: View {
     @Environment(\.openURL) private var openURL
-    @ObservedObject var store: EventStore
+    let store: EventStore
     @State private var expandedEventID: String?
     @State private var selectedCategory: CategoryFilter = .all
     private let refreshTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
@@ -35,10 +35,10 @@ struct EventsMenuView: View {
                 await store.refreshIfNeeded()
             }
         }
-        .onChange(of: selectedCategory) { _ in
+        .onChange(of: selectedCategory) {
             collapseExpandedIfFilteredOut()
         }
-        .onChange(of: store.events.map(\.id)) { _ in
+        .onChange(of: store.events.map(\.id)) {
             collapseExpandedIfFilteredOut()
         }
     }
