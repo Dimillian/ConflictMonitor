@@ -50,6 +50,30 @@ struct ConflictEvent: Identifiable, Decodable {
         return "Unknown location"
     }
 
+    var websiteURL: URL? {
+        let titleSlug = slug(from: title)
+        guard !titleSlug.isEmpty else { return URL(string: "https://monitor-the-situation.com") }
+
+        if let region, !region.isEmpty {
+            let regionSlug = slug(from: region)
+            if !regionSlug.isEmpty {
+                return URL(string: "https://monitor-the-situation.com/\(regionSlug)/\(titleSlug)")
+            }
+        }
+
+        return URL(string: "https://monitor-the-situation.com/\(titleSlug)")
+    }
+
+    private func slug(from value: String) -> String {
+        let lowercased = value.lowercased()
+        let replaced = lowercased.replacingOccurrences(
+            of: "[^a-z0-9]+",
+            with: "-",
+            options: .regularExpression
+        )
+        return replaced.trimmingCharacters(in: CharacterSet(charactersIn: "-"))
+    }
+
     private static let timestampFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
@@ -58,4 +82,3 @@ struct ConflictEvent: Identifiable, Decodable {
         return formatter
     }()
 }
-

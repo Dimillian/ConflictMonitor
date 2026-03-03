@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct EventsMenuView: View {
+    @Environment(\.openURL) private var openURL
     @ObservedObject var store: EventStore
     @State private var expandedEventID: String?
     @State private var selectedCategory: CategoryFilter = .all
@@ -77,19 +78,32 @@ struct EventsMenuView: View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 8) {
                 ForEach(Array(filteredEvents.enumerated()), id: \.element.id) { index, event in
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.18)) {
-                            expandedEventID = expandedEventID == event.id ? nil : event.id
+                    EventRowView(
+                        event: event,
+                        isExpanded: expandedEventID == event.id,
+                        signals: store.signalsByEventID[event.id] ?? [],
+                        isSignalsLoading: store.signalsLoadingEventIDs.contains(event.id),
+                        signalsError: store.signalErrorsByEventID[event.id],
+                        onToggleExpanded: {
+                            let willExpand = expandedEventID != event.id
+                            withAnimation(.easeInOut(duration: 0.18)) {
+                                expandedEventID = willExpand ? event.id : nil
+                            }
+                            if willExpand {
+                                Task {
+                                    await store.loadSignals(for: event.id)
+                                }
+                            }
+                        },
+                        onOpenEventInBrowser: {
+                            openURL(event.websiteURL ?? websiteURL)
+                        },
+                        onOpenSignal: { url in
+                            openURL(url)
                         }
-                    } label: {
-                        EventRowView(
-                            event: event,
-                            isExpanded: expandedEventID == event.id
-                        )
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
+                    )
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(Rectangle())
 
                     if index < filteredEvents.count - 1 {
                         Divider()

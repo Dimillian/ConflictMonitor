@@ -26,6 +26,26 @@ struct EventsClient {
         let events = try decoder.decode([ConflictEvent].self, from: data)
         return events.sorted(by: { $0.createdAtDate > $1.createdAtDate })
     }
+
+    func fetchSignals(for eventID: String) async throws -> [ConflictSignal] {
+        let signalsEndpoint = endpoint.appending(path: "\(eventID)/signals")
+        var request = URLRequest(url: signalsEndpoint)
+        request.cachePolicy = .reloadIgnoringLocalCacheData
+        request.timeoutInterval = 15
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+
+        let (data, response) = try await session.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw APIError.invalidResponse
+        }
+        guard (200 ..< 300).contains(httpResponse.statusCode) else {
+            throw APIError.httpStatus(httpResponse.statusCode)
+        }
+
+        let decoder = JSONDecoder()
+        let signals = try decoder.decode([ConflictSignal].self, from: data)
+        return signals.sorted(by: { $0.timestampDate > $1.timestampDate })
+    }
 }
 
 enum APIError: LocalizedError {

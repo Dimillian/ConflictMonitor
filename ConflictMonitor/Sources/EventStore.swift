@@ -15,6 +15,9 @@ final class EventStore: ObservableObject {
     @Published private(set) var lastUpdatedAt: Date?
     @Published private(set) var isLiveEnabled = true
     @Published private(set) var liveStatus: LiveStatus = .disconnected
+    @Published private(set) var signalsByEventID: [String: [ConflictSignal]] = [:]
+    @Published private(set) var signalsLoadingEventIDs: Set<String> = []
+    @Published private(set) var signalErrorsByEventID: [String: String] = [:]
 
     private let client: EventsClient
     private let realtimeClient: RealtimeClient
@@ -69,6 +72,28 @@ final class EventStore: ObservableObject {
         }
     }
 
+    func loadSignals(for eventID: String, force: Bool = false) async {
+        if !force, signalsByEventID[eventID] != nil {
+            return
+        }
+        if signalsLoadingEventIDs.contains(eventID) {
+            return
+        }
+
+        signalsLoadingEventIDs.insert(eventID)
+        signalErrorsByEventID[eventID] = nil
+
+        defer {
+            signalsLoadingEventIDs.remove(eventID)
+        }
+
+        do {
+            signalsByEventID[eventID] = try await client.fetchSignals(for: eventID)
+        } catch {
+            signalErrorsByEventID[eventID] = error.localizedDescription
+        }
+    }
+
     private func bindRealtimeCallbacks() {
         realtimeClient.onStateChange = { [weak self] state in
             guard let self else { return }
@@ -114,6 +139,8 @@ final class EventStore: ObservableObject {
         realtimeRefreshTask = Task { [weak self] in
             try? await Task.sleep(nanoseconds: 800_000_000)
             guard let self else { return }
+            self.signalsByEventID.removeAll()
+            self.signalErrorsByEventID.removeAll()
             await self.refreshIfNeeded(force: true)
         }
     }
