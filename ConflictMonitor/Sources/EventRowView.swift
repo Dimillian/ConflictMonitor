@@ -13,7 +13,7 @@ struct EventRowView: View {
                         .foregroundStyle(.primary)
                         .lineLimit(2)
 
-                    HStack(spacing: 8) {
+                    HStack(spacing: 4) {
                         Text(categoryBadgeLabel)
                             .font(.system(size: 9, weight: .bold))
                             .padding(.horizontal, 7)
@@ -164,7 +164,7 @@ struct EventRowView: View {
 
     private var separatorDot: some View {
         Text("•")
-            .font(.system(size: 10, weight: .medium))
+            .font(.system(size: 9, weight: .medium))
             .foregroundStyle(.secondary.opacity(0.7))
     }
 }
