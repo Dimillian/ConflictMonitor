@@ -47,6 +47,13 @@ struct EventsMenuView: View {
                     .controlSize(.small)
             }
 
+            Button(liveButtonTitle) {
+                store.toggleLive()
+            }
+            .controlSize(.small)
+            .buttonStyle(.bordered)
+            .tint(liveButtonColor)
+
             Button("Refresh") {
                 Task { await store.refreshIfNeeded(force: true) }
             }
@@ -111,5 +118,12 @@ struct EventsMenuView: View {
                 .font(.system(size: 10, weight: .medium))
         }
     }
-}
 
+    private var liveButtonTitle: String {
+        store.isLiveEnabled ? "Live" : "Live Off"
+    }
+
+    private var liveButtonColor: Color {
+        store.isLiveEnabled ? .green : .gray
+    }
+}
